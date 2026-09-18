@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gudang Sparepart — PT. VENDOURA INTI PERKASA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#EEF1EF; --surface:#FFFFFF; --ink:#1B2430; --ink-soft:#5B6772;
+    --line:#DDE3DF; --steel:#2E5C8A; --steel-dark:#204468; --amber:#E8A33D;
+    --amber-dark:#8a5b13; --danger:#B23A32; --danger-bg:#F8E3E1; --success:#256a45; --success-bg:#E4F1E9;
+    --warn-bg:#FCEEDA; --sidebar:#1B2430; --brand-red:#C8161C; --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);}
+  input,select,textarea,button{font-family:inherit;font-size:14px;}
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;margin:0;letter-spacing:.2px;}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13.5px;}
+  th{color:var(--ink-soft);font-weight:600;font-size:12.5px;background:#F5F7F6;}
+  td.num, th.num{text-align:right;}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:4px;padding:9px 16px;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  .btn-primary{background:var(--steel);color:#fff;}
+  .btn-primary:hover{background:var(--steel-dark);}
+  .btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);}
+  .btn-danger:hover{background:var(--danger-bg);}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn-ghost:hover{background:#F5F7F6;}
+  .btn-sm{padding:5px 10px;font-size:12.5px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:4px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--steel);outline-offset:1px;border-color:var(--steel);}
+  .field{margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;}
+  #root{min-height:100vh;}
+  /* ---- Login (split screen) ---- */
+  .login-wrap{min-height:100vh;display:flex;background:#fff;}
+  .login-left{flex:1 1 460px;max-width:460px;display:flex;flex-direction:column;justify-content:center;padding:56px 52px;}
+  .login-logo-row{display:flex;align-items:center;gap:13px;margin-bottom:38px;}
+  .login-logo-box{width:48px;height:48px;border-radius:6px;background:#fff;border:2.5px solid var(--brand-red);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:5px;}
+  .login-co-name{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:15px;line-height:1.25;color:var(--ink);letter-spacing:.2px;}
+  .login-co-sub{font-size:11px;color:var(--ink-soft);letter-spacing:.6px;font-weight:700;margin-top:1px;}
+  .login-title{font-family:var(--font-body);font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px;}
+  .login-sub{color:var(--ink-soft);font-size:14px;margin-bottom:28px;}
+  .login-left label{text-transform:uppercase;letter-spacing:.6px;font-size:11px;}
+  .btn-login{width:100%;justify-content:center;padding:12px;border-radius:8px;font-size:14.5px;margin-top:6px;}
+  .login-right{flex:1;position:relative;background-size:cover;background-position:center;display:flex;align-items:flex-end;overflow:hidden;}
+  .login-right::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(15,20,26,.10) 0%, rgba(15,20,26,.35) 55%, rgba(15,20,26,.82) 100%);}
+  .login-right-text{position:relative;z-index:1;color:#fff;padding:50px 56px;max-width:560px;}
+  .login-right-text .tag{color:#9CC4EA;letter-spacing:1.5px;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:12px;}
+  .login-right-text h2{font-family:var(--font-body);font-weight:800;font-size:27px;line-height:1.35;}
+  .setup-banner{background:#EEF3F8;color:var(--steel-dark);border-radius:6px;padding:10px 14px;font-size:12.5px;margin-bottom:22px;}
+  @media(max-width:760px){ .login-right{display:none;} .login-left{max-width:none;flex:1;} }
+  /* ---- Shell ---- */
+  .shell{display:flex;min-height:100vh;}
+  .sidebar{width:222px;background:var(--sidebar);color:#C7CED6;flex-shrink:0;display:flex;flex-direction:column;padding:20px 0;}
+  .sidebar-brand{padding:0 20px 20px 20px;border-bottom:1px solid #2B3542;margin-bottom:10px;display:flex;align-items:center;gap:11px;}
+  .sidebar-logo-box{width:36px;height:36px;border-radius:5px;background:#fff;border:2px solid var(--brand-red);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;}
+  .sidebar-brand .co{color:#fff;font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:13px;line-height:1.25;letter-spacing:.2px;}
+  .sidebar-brand .sub{color:#8A96A3;font-size:10.5px;margin-top:2px;letter-spacing:.3px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;border-left:3px solid transparent;font-size:14px;color:#C7CED6;}
+  .nav-item:hover{background:#232E3B;}
+  .nav-item.active{border-left-color:var(--amber);background:#232E3B;color:#fff;font-weight:600;}
+  .nav-icon{width:18px;text-align:center;}
+  .sidebar-foot{margin-top:auto;padding:14px 20px 0 20px;border-top:1px solid #2B3542;font-size:11.5px;color:#8A96A3;}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 26px;display:flex;justify-content:space-between;align-items:center;}
+  .topbar h2{font-size:19px;}
+  .topbar .who{display:flex;align-items:center;gap:14px;font-size:13px;}
+  .save-dot{width:8px;height:8px;border-radius:50%;background:#C6CCD1;display:inline-block;margin-right:6px;}
+  .save-dot.on{background:var(--success);}
+  .role-badge{background:#EEF3F8;color:var(--steel-dark);padding:3px 9px;border-radius:3px;font-size:11.5px;font-weight:600;}
+  .rb-admin{background:#EAF1FB;color:var(--steel-dark);}
+  .rb-petugas{background:var(--success-bg);color:var(--success);}
+  .rb-viewer{background:#EEF0F2;color:#5B6772;}
+  .icon-btn{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px;border-radius:4px;color:var(--ink-soft);}
+  .icon-btn:hover{background:#F0F2F1;}
+  .icon-btn.danger:hover{color:var(--danger);}
+  .content{padding:26px;flex:1;overflow-x:auto;}
+  .view-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;}
+  .view-head p{color:var(--ink-soft);font-size:13px;margin-top:4px;}
+  /* ---- Dashboard cards ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  .stat-card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;}
+  .stat-card .label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .stat-card .value{font-family:var(--font-display);font-size:30px;margin-top:4px;}
+  .hazard-card{border:1px solid var(--line);border-radius:6px;background:#fff;overflow:hidden;}
+  .hazard-top{height:6px;background:repeating-linear-gradient(45deg,var(--amber) 0 12px,var(--ink) 12px 24px);}
+  .hazard-body{padding:16px 18px;}
+  .section-title{font-size:15px;margin-bottom:10px;}
+  .status-pill{padding:3px 9px;border-radius:3px;font-size:12px;font-weight:600;display:inline-block;}
+  .status-ok{background:var(--success-bg);color:var(--success);}
+  .status-warn{background:var(--warn-bg);color:var(--amber-dark);}
+  .status-danger{background:var(--danger-bg);color:var(--danger);}
+  .badge{padding:3px 8px;border-radius:3px;font-size:11.5px;font-weight:700;}
+  .badge-masuk{background:#EEF3F8;color:var(--steel-dark);}
+  .badge-keluar{background:var(--warn-bg);color:var(--amber-dark);}
+  .empty-state{text-align:center;padding:46px 20px;color:var(--ink-soft);}
+  .empty-state h3{color:var(--ink);margin-bottom:6px;}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .toolbar input,.toolbar select{width:auto;min-width:150px;}
+  .form-error{color:var(--danger);font-size:13px;margin-top:8px;display:none;}
+  .form-error.show{display:block;}
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:5px;}
+  /* ---- Modal ---- */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(15,20,26,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal{background:#fff;border-radius:8px;padding:26px;max-width:520px;width:100%;max-height:90vh;overflow:auto;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .modal-head h3{font-size:18px;}
+  .close-x{cursor:pointer;background:none;border:none;font-size:20px;color:var(--ink-soft);}
+  .action-row{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+  .status-banner{padding:12px 14px;border-radius:5px;font-size:13px;margin-bottom:16px;background:#EEF3F8;color:var(--steel-dark);}
+  @media(max-width:860px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;padding:10px;}
+    .sidebar-brand{display:none;}
+    .sidebar-foot{display:none;}
+    .nav-item{border-left:none;border-bottom:3px solid transparent;padding:8px 12px;}
+    .nav-item.active{border-bottom-color:var(--amber);}
+    .stat-grid{grid-template-columns:1fr 1fr;}
+    .grid2{grid-template-columns:1fr;}
+    .content{padding:16px;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ============ STATE ============ */
+let state = {
+  user: null,
+  users: [],
+  items: [],
+  stockIn: [],
+  stockOut: [],
+  view: 'dashboard',
+  folderHandle: null,
+  lastSaved: null,
+};
+window.__lastReport = null;
+
+/* ============ HELPERS ============ */
+function uid(p){ return p+'-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtNum(n){ return (n||0).toLocaleString('id-ID'); }
+function fmtRupiah(n){ return 'Rp ' + (n||0).toLocaleString('id-ID'); }
+function fmtDateDisplay(iso){ if(!iso) return '-'; const p=iso.split('-'); return p.length===3? `${p[2]}/${p[1]}/${p[0]}` : iso; }
+function esc(s){ return (s===undefined||s===null?'':String(s)).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function getItem(kode){ return state.items.find(i=>i.kode===kode); }
+function getItemName(kode){ const it=getItem(kode); return it? it.nama : '(item dihapus)'; }
+function stockStatus(item){
+  if(item.stok<=0) return {label:'Habis', cls:'status-danger'};
+  if(item.stok<=item.stokMin) return {label:'Rendah', cls:'status-warn'};
+  return {label:'Aman', cls:'status-ok'};
+}
+function canEdit(){ return state.user && state.user.role!=='Hanya Lihat'; }
+function canDelete(){ return state.user && state.user.role==='Admin'; }
+function isAdmin(){ return state.user && state.user.role==='Admin'; }
+function inRange(d,from,to){ if(from && d<from) return false; if(to && d>to) return false; return true; }
+function roleBadgeClass(role){ return {'Admin':'rb-admin','Petugas Gudang':'rb-petugas','Hanya Lihat':'rb-viewer'}[role] || 'rb-viewer'; }
+function findUserByEmail(email){ return state.users.find(u=>u.email.toLowerCase()===String(email||'').toLowerCase()); }
+function adminCount(){ return state.users.filter(u=>u.role==='Admin').length; }
+
+/* ============ RENDER DISPATCH ============ */
+function render(){
+  const root = document.getElementById('root');
+  root.innerHTML = state.user ? shellHTML() : loginHTML();
+  if(state.user) postRenderView();
+}
+function navigate(view){ state.view = view; render(); }
+
+/* ============ LOGIN ============ */
+const LOGO_SVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="92" height="92" fill="white" stroke="#C8161C" stroke-width="5"/><path d="M22 22 L50 76 L78 22" fill="none" stroke="#C8161C" stroke-width="17" stroke-linejoin="miter" stroke-linecap="butt"/></svg>`;
+function loginHeaderHTML(){
+  return `
+  <div class="login-logo-row">
+    <div class="login-logo-box">${LOGO_SVG}</div>
+    <div>
+      <div class="login-co-name">PT. VENDOURA INTI PERKASA</div>
+      <div class="login-co-sub">DEVISI LOGISTIK GUDANG</div>
+    </div>
+  </div>`;
+}
+function loginRightHTML(){
+  return `
+  <div class="login-right" style="background-image:url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1400&q=70');">
+    <div class="login-right-text">
+      <div class="tag">Sistem Gudang Terpadu</div>
+      <h2>Pencatatan stok masuk &amp; keluar sparepart yang rapi, cepat, dan terlacak.</h2>
+    </div>
+  </div>`;
+}
+function loginImportBlockHTML(){
+  return `
+  <div class="setup-banner" style="background:#F5F7F6;color:var(--ink-soft);margin-top:22px;">
+    Sudah punya file cadangan (.json) dari sesi sebelumnya? Impor di sini agar data &amp; akun Anda kembali seperti terakhir kali dibuka.
+  </div>
+  <button type="button" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:10px;" data-action="login-import-trigger">Impor dari File Cadangan (.json)</button>
+  <input type="file" id="login-import-input" accept=".json" style="display:none;" data-onchange="login-import">
+  `;
+}
+function loginHTML(){
+  if(!state.users.length){
+    return `
+    <div class="login-wrap">
+      <div class="login-left">
+        ${loginHeaderHTML()}
+        <div class="setup-banner">Belum ada akun terdaftar. Buat akun Admin pertama untuk mulai menggunakan sistem.</div>
+        <div class="login-title">Buat Akun Admin</div>
+        <p class="login-sub">Akun ini akan memiliki akses penuh dan dapat menambah pengguna lain nantinya.</p>
+        <form data-form="user-setup-form">
+          <div class="field"><label>Nama</label><input type="text" name="nama" placeholder="cth. Admin Logistik" required></div>
+          <div class="field"><label>Email</label><input type="text" name="email" placeholder="nama@vendoura.com" required></div>
+          <div class="field"><label>Password</label><input type="password" name="password" placeholder="Minimal 4 karakter" required></div>
+          <div class="form-error" id="setup-error"></div>
+          <button class="btn btn-primary btn-login" type="submit">Buat Akun &amp; Masuk</button>
+        </form>
+        <p class="hint" style="margin-top:10px;">Catatan: autentikasi ini disimpan lokal di perangkat/browser ini, bukan sistem keamanan tingkat server.</p>
+        ${loginImportBlockHTML()}
+      </div>
+      ${loginRightHTML()}
+    </div>`;
+  }
+  return `
+  <div class="login-wrap">
+    <div class="login-left">
+      ${loginHeaderHTML()}
+      <div class="login-title">Inventory Sparepart</div>
+      <p class="login-sub">Masuk untuk mengelola pencatatan stok gudang.</p>
+      <form data-form="login-form">
+        <div class="field"><label>Email</label><input type="text" name="email" placeholder="nama@vendoura.com" required></div>
+        <div class="field"><label>Password</label><input type="password" name="password" placeholder="••••••••" required></div>
+        <div class="form-error" id="login-error"></div>
+        <button class="btn btn-primary btn-login" type="submit">Masuk</button>
+      </form>
+      <p class="hint" style="margin-top:16px;">Lupa akun? Minta Admin untuk memeriksa atau menambahkan akun Anda di menu Pengguna.</p>
+      ${loginImportBlockHTML()}
+    </div>
+    ${loginRightHTML()}
+  </div>`;
+}
+
+/* ============ SHELL ============ */
+function navList(){
+  const items = [
+    {v:'dashboard', label:'Dashboard', icon:'&#9632;'},
+    {v:'master', label:'Master Sparepart', icon:'&#9776;'},
+  ];
+  if(canEdit()){
+    items.push({v:'stokmasuk', label:'Stok Masuk', icon:'&#8595;'});
+    items.push({v:'stokkeluar', label:'Stok Keluar', icon:'&#8593;'});
+  }
+  items.push({v:'riwayat', label:'Riwayat Transaksi', icon:'&#8635;'});
+  items.push({v:'laporan', label:'Laporan', icon:'&#128196;'});
+  items.push({v:'analitik', label:'Grafik & Analitik', icon:'&#128200;'});
+  if(isAdmin()) items.push({v:'pengguna', label:'Pengguna', icon:'&#128101;'});
+  if(isAdmin()) items.push({v:'data', label:'Cadangan Data', icon:'&#128190;'});
+  return items;
+}
+function viewTitle(v){
+  return {dashboard:'Dashboard', master:'Master Sparepart', stokmasuk:'Stok Masuk', stokkeluar:'Stok Keluar',
+    riwayat:'Riwayat Transaksi', laporan:'Laporan', analitik:'Grafik & Analitik', pengguna:'Pengguna', data:'Cadangan Data'}[v] || '';
+}
+function shellHTML(){
+  const nav = navList().map(n => `<div class="nav-item ${state.view===n.v?'active':''}" data-action="nav" data-id="${n.v}"><span class="nav-icon">${n.icon}</span>${n.label}</div>`).join('');
+  const savedOn = !!state.folderHandle;
+  return `
+  <div class="shell">
+    <div class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo-box">${LOGO_SVG}</div>
+        <div>
+          <div class="co">PT. Vendoura<br>Inti Perkasa</div>
+          <div class="sub">GUDANG SPAREPART</div>
+        </div>
+      </div>
+      ${nav}
+      <div class="sidebar-foot">
+        <span class="save-dot ${savedOn?'on':''}"></span>${savedOn? 'Folder tersambung' : 'Belum tersambung ke folder'}
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <h2>${viewTitle(state.view)}</h2>
+        <div class="who">
+          <span class="role-badge ${roleBadgeClass(state.user.role)}">${esc(state.user.role)}</span>
+          <span>${esc(state.user.name)}</span>
+          <button class="btn btn-ghost btn-sm" data-action="logout">Keluar</button>
+        </div>
+      </div>
+      <div class="content" id="content">${viewHTML(state.view)}</div>
+    </div>
+  </div>
+  <div id="modal-root"></div>`;
+}
+
+function viewHTML(v){
+  switch(v){
+    case 'dashboard': return dashboardHTML();
+    case 'master': return masterHTML();
+    case 'stokmasuk': return stockInHTML();
+    case 'stokkeluar': return stockOutHTML();
+    case 'riwayat': return riwayatHTML();
+    case 'laporan': return laporanHTML();
+    case 'analitik': return analyticsHTML();
+    case 'pengguna': return penggunaHTML();
+    case 'data': return dataHTML();
+    default: return '';
+  }
+}
+function postRenderView(){
+  if(state.view==='data') updateSaveStatusUI();
+  if(state.view==='analitik') initAnalyticsCharts();
+}
+
+/* ============ DASHBOARD ============ */
+function dashboardHTML(){
+  let restoredBanner = '';
+  if(state._justRestored){
+    restoredBanner = `<div class="status-banner">Data sebelumnya berhasil dimuat otomatis dari penyimpanan browser ini.</div>`;
+    state._justRestored = false;
+  }
+  const totalJenis = state.items.length;
+  const totalStok = state.items.reduce((s,i)=>s+i.stok,0);
+  const perluPerhatian = state.items.filter(i=>i.stok<=i.stokMin);
+  const today = todayStr();
+  const txHariIni = state.stockIn.filter(t=>t.tanggal===today).length + state.stockOut.filter(t=>t.tanggal===today).length;
+
+  const lowRows = perluPerhatian.length ? `
+    <table><thead><tr><th>Kode</th><th>Nama</th><th class="num">Stok</th><th class="num">Stok Min</th><th>Status</th></tr></thead>
+    <tbody>${perluPerhatian.map(i=>{const st=stockStatus(i); return `<tr><td>${esc(i.kode)}</td><td>${esc(i.nama)}</td><td class="num">${fmtNum(i.stok)}</td><td class="num">${fmtNum(i.stokMin)}</td><td><span class="status-pill ${st.cls}">${st.label}</span></td></tr>`;}).join('')}</tbody></table>`
+    : `<p style="color:var(--ink-soft);font-size:13.5px;">Semua stok sparepart dalam kondisi aman.</p>`;
+
+  const recent = [
+    ...state.stockIn.map(t=>({...t,jenis:'Masuk'})),
+    ...state.stockOut.map(t=>({...t,jenis:'Keluar'})),
+  ].sort((a,b)=> b.tanggal.localeCompare(a.tanggal) || (b.id||'').localeCompare(a.id||'')).slice(0,6);
+
+  const recentRows = recent.length ? `
+    <table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Kode</th><th>Nama</th><th class="num">Jumlah</th><th>Oleh</th></tr></thead>
+    <tbody>${recent.map(t=>`<tr><td>${fmtDateDisplay(t.tanggal)}</td><td><span class="badge ${t.jenis==='Masuk'?'badge-masuk':'badge-keluar'}">${t.jenis}</span></td><td>${esc(t.kode)}</td><td>${esc(getItemName(t.kode))}</td><td class="num">${fmtNum(t.jumlah)}</td><td>${esc(t.oleh)}</td></tr>`).join('')}</tbody></table>`
+    : `<p style="color:var(--ink-soft);font-size:13.5px;">Belum ada transaksi tercatat.</p>`;
+
+  return `
+  ${restoredBanner}
+  <div class="stat-grid">
+    <div class="stat-card"><div class="label">Total Jenis Sparepart</div><div class="value">${fmtNum(totalJenis)}</div></div>
+    <div class="stat-card"><div class="label">Total Unit Stok</div><div class="value">${fmtNum(totalStok)}</div></div>
+    <div class="stat-card"><div class="label">Perlu Perhatian</div><div class="value">${fmtNum(perluPerhatian.length)}</div></div>
+    <div class="stat-card"><div class="label">Transaksi Hari Ini</div><div class="value">${fmtNum(txHariIni)}</div></div>
+  </div>
+  <div class="hazard-card" style="margin-bottom:22px;">
+    <div class="hazard-top"></div>
+    <div class="hazard-body">
+      <h3 class="section-title">Perlu Perhatian — Stok Rendah / Habis</h3>
+      ${lowRows}
+    </div>
+  </div>
+  <div class="card">
+    <h3 class="section-title">Transaksi Terbaru</h3>
+    ${recentRows}
+  </div>`;
+}
+
+/* ============ MASTER SPAREPART ============ */
+function masterHTML(){
+  return `
+  <div class="view-head">
+    <div><p>Kelola data sparepart: kode, nama, kategori, lokasi rak, dan batas stok minimum.</p></div>
+    ${canEdit() ? `<button class="btn btn-primary" data-action="item-new">+ Tambah Sparepart</button>` : ''}
+  </div>
+  <div class="toolbar">
+    <input type="text" id="master-search" data-filter="master-search" placeholder="Cari kode, nama, kategori, atau lokasi...">
+  </div>
+  <div class="card" id="master-table-container">${renderMasterTable('')}</div>`;
+}
+function renderMasterTable(term){
+  let data = [...state.items];
+  if(term){
+    const t = term.toLowerCase();
+    data = data.filter(i => i.kode.toLowerCase().includes(t) || i.nama.toLowerCase().includes(t) ||
+      (i.kategori||'').toLowerCase().includes(t) || (i.lokasi||'').toLowerCase().includes(t));
+  }
+  data.sort((a,b)=>a.nama.localeCompare(b.nama));
+  if(!state.items.length){
+    return `<div class="empty-state"><h3>Belum ada sparepart tercatat</h3><p>Tambahkan sparepart pertama untuk mulai mencatat stok gudang.</p>
+      ${canEdit()? `<button class="btn btn-primary" data-action="item-new" style="margin-top:10px;">+ Tambah Sparepart</button>`:''}</div>`;
+  }
+  if(!data.length){
+    return `<div class="empty-state"><h3>Tidak ditemukan</h3><p>Tidak ada sparepart yang cocok dengan pencarian.</p></div>`;
+  }
+  return `<table><thead><tr>
+    <th>Kode</th><th>Nama</th><th>Kategori</th><th>Satuan</th><th>Lokasi</th>
+    <th class="num">Stok</th><th class="num">Stok Min</th><th>Status</th>${canEdit()?'<th></th>':''}
+  </tr></thead><tbody>
+  ${data.map(i=>{
+    const st = stockStatus(i);
+    return `<tr>
+      <td>${esc(i.kode)}</td><td>${esc(i.nama)}</td><td>${esc(i.kategori||'-')}</td><td>${esc(i.satuan||'-')}</td><td>${esc(i.lokasi||'-')}</td>
+      <td class="num">${fmtNum(i.stok)}</td><td class="num">${fmtNum(i.stokMin)}</td>
+      <td><span class="status-pill ${st.cls}">${st.label}</span></td>
+      ${canEdit()? `<td style="white-space:nowrap;">
+        <button class="btn btn-ghost btn-sm" data-action="item-edit" data-id="${esc(i.kode)}">Ubah</button>
+        ${canDelete()? `<button class="btn btn-danger btn-sm" data-action="item-delete" data-id="${esc(i.kode)}">Hapus</button>` : ''}
+      </td>` : ''}
+    </tr>`;
+  }).join('')}
+  </tbody></table>`;
+}
+
+/* ---- Item Modal ---- */
+function openItemModal(editKode){
+  const editing = !!editKode;
+  const item = editing ? getItem(editKode) : null;
+  const stockEditable = !editing || isAdmin();
+  const html = `
+  <div class="modal-backdrop" data-action="modal-backdrop">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3>${editing? 'Ubah Sparepart' : 'Tambah Sparepart'}</h3>
+        <button class="close-x" data-action="modal-close">&times;</button>
+      </div>
+      <form data-form="item-form" ${editing? `data-edit-kode="${esc(editKode)}"`:''}>
+        <div class="grid2">
+          <div class="field">
+            <label>Kode Sparepart</label>
+            <input type="text" name="kode" value="${editing? esc(item.kode):''}" ${editing?'disabled':'required'} placeholder="cth. SP-001">
+          </div>
+          <div class="field">
+            <label>Nama Sparepart</label>
+            <input type="text" name="nama" value="${editing? esc(item.nama):''}" required placeholder="cth. Bearing 6204">
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Kategori</label><input type="text" name="kategori" value="${editing? esc(item.kategori||''):''}" placeholder="cth. Mekanikal"></div>
+          <div class="field"><label>Satuan</label><input type="text" name="satuan" value="${editing? esc(item.satuan||''):''}" placeholder="cth. Pcs"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Lokasi Rak</label><input type="text" name="lokasi" value="${editing? esc(item.lokasi||''):''}" placeholder="cth. Rak A-3"></div>
+          <div class="field"><label>Harga Satuan (opsional)</label><input type="number" name="harga" min="0" value="${editing? (item.harga||''):''}" placeholder="0"></div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>${editing? 'Stok (koreksi manual)' : 'Stok Awal'}</label>
+            <input type="number" name="stok" min="0" value="${editing? item.stok : 0}" ${stockEditable? '' : 'disabled'}>
+            ${editing && !stockEditable? '<p class="hint">Hanya Admin yang dapat mengoreksi stok langsung. Gunakan Stok Masuk/Keluar untuk perubahan normal.</p>':''}
+          </div>
+          <div class="field"><label>Stok Minimum (batas peringatan)</label><input type="number" name="stokMin" min="0" value="${editing? item.stokMin : 0}"></div>
+        </div>
+        <div class="form-error" id="item-form-error"></div>
+        <div class="action-row">
+          <button type="button" class="btn btn-ghost" data-action="modal-close">Batal</button>
+          <button type="submit" class="btn btn-primary">${editing?'Simpan Perubahan':'Tambah Sparepart'}</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+function showFormError(form, msg){
+  const err = form.querySelector('.form-error');
+  if(err){ err.textContent = msg; err.classList.add('show'); }
+}
+
+/* ============ KOREKSI TRANSAKSI (Ubah / Batalkan) ============ */
+function getTx(type, id){ return type==='in' ? state.stockIn.find(t=>t.id===id) : state.stockOut.find(t=>t.id===id); }
+function openTxModal(type, id){
+  const tx = getTx(type, id);
+  if(!tx) return;
+  const item = getItem(tx.kode);
+  const isIn = type==='in';
+  const html = `
+  <div class="modal-backdrop" data-action="modal-backdrop">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Ubah Catatan Stok ${isIn?'Masuk':'Keluar'}</h3>
+        <button class="close-x" data-action="modal-close">&times;</button>
+      </div>
+      <p class="hint" style="margin-bottom:14px;">Gunakan ini untuk memperbaiki kesalahan input, kesalahan informasi, atau data yang perlu disesuaikan. Sparepart: <strong>${esc(tx.kode)} — ${esc(item? item.nama : '(item dihapus)')}</strong>${item? '' : ' — item ini sudah dihapus dari Master Sparepart, sehingga stok tidak dapat disesuaikan otomatis.'}</p>
+      <form data-form="tx-form" data-type="${type}" data-id="${esc(id)}">
+        <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="${esc(tx.tanggal)}" required></div>
+        <div class="field"><label>Jumlah ${isIn?'Masuk':'Keluar'}</label><input type="number" name="jumlah" min="1" value="${tx.jumlah}" required></div>
+        ${isIn ? `
+        <div class="field"><label>Sumber / Supplier (opsional)</label><input type="text" name="sumber" value="${esc(tx.sumber||'')}"></div>
+        ` : `
+        <div class="grid2">
+          <div class="field"><label>Nama Pengambil</label><input type="text" name="pengambil" value="${esc(tx.pengambil||'')}" required></div>
+          <div class="field"><label>Divisi / Bagian</label><input type="text" name="divisi" value="${esc(tx.divisi||'')}" required></div>
+        </div>
+        `}
+        <div class="field"><label>Keterangan (opsional)</label><textarea name="keterangan" rows="2">${esc(tx.keterangan||'')}</textarea></div>
+        <div class="form-error" id="tx-form-error"></div>
+        <div class="action-row">
+          <button type="button" class="btn btn-ghost" data-action="modal-close">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+function cancelTx(type, id){
+  const tx = getTx(type, id);
+  if(!tx) return;
+  const item = getItem(tx.kode);
+  const isIn = type==='in';
+  const label = isIn? 'stok masuk' : 'stok keluar';
+  let warn = '';
+  if(item && isIn && (item.stok - tx.jumlah) < 0){
+    warn = ' Perhatian: membatalkan catatan ini akan membuat stok sparepart menjadi minus karena sudah terlanjur digunakan/dicatat keluar setelahnya — periksa kembali stok setelah pembatalan.';
+  }
+  if(!confirm(`Batalkan catatan ${label} tanggal ${fmtDateDisplay(tx.tanggal)} sejumlah ${fmtNum(tx.jumlah)}?${warn}`)) return;
+  if(item){
+    if(isIn) item.stok -= tx.jumlah; else item.stok += tx.jumlah;
+  }
+  if(isIn) state.stockIn = state.stockIn.filter(t=>t.id!==id); else state.stockOut = state.stockOut.filter(t=>t.id!==id);
+  autosave();
+  navigate(state.view);
+}
+
+/* ============ STOK MASUK ============ */
+function itemOptionsHTML(selected, term){
+  let data = [...state.items];
+  if(term){
+    const t = term.toLowerCase();
+    data = data.filter(i => i.nama.toLowerCase().includes(t) || i.kode.toLowerCase().includes(t));
+  }
+  const sorted = data.sort((a,b)=>a.nama.localeCompare(b.nama));
+  const opts = sorted.map(i=>
+    `<option value="${esc(i.kode)}" ${selected===i.kode?'selected':''}>${esc(i.kode)} — ${esc(i.nama)}</option>`).join('');
+  return `<option value="">-- Pilih Sparepart --</option>` + opts;
+}
+function stockInHTML(){
+  if(!canEdit()){
+    return `<div class="empty-state"><h3>Akses terbatas</h3><p>Peran "Hanya Lihat" tidak dapat mencatat stok masuk. Lihat riwayatnya di menu Riwayat Transaksi.</p></div>`;
+  }
+  return `
+  <div class="grid2" style="align-items:start;">
+    <div class="card">
+      <h3 class="section-title">Catat Stok Masuk</h3>
+      <form data-form="stockin-form">
+        <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="${todayStr()}" required></div>
+        <div class="field">
+          <label>Cari Nama Sparepart</label>
+          <input type="text" id="stockin-item-search" data-filter="stockin-item-search" placeholder="Ketik nama atau kode sparepart...">
+        </div>
+        <div class="field"><label>Sparepart</label><select name="kode" id="stockin-select" data-onchange="stockin-kode" required>${itemOptionsHTML('','')}</select>
+          <p class="hint" id="stockin-hint"></p>
+        </div>
+        <div class="field"><label>Jumlah Masuk</label><input type="number" name="jumlah" min="1" required></div>
+        <div class="field"><label>Sumber / Supplier (opsional)</label><input type="text" name="sumber" placeholder="cth. CV Sumber Jaya"></div>
+        <div class="field"><label>Keterangan (opsional)</label><textarea name="keterangan" rows="2"></textarea></div>
+        <div class="form-error" id="stockin-form-error"></div>
+        <button class="btn btn-primary" type="submit">Simpan Stok Masuk</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3 class="section-title">Riwayat Terbaru</h3>
+      <div class="field" style="margin-bottom:10px;">
+        <input type="text" id="stockin-history-search" data-filter="stockin-history-search" placeholder="Cari nama barang di riwayat...">
+      </div>
+      <div id="stockin-history-container">${renderStockInRecent('')}</div>
+    </div>
+  </div>`;
+}
+function renderStockInRecent(term){
+  let data = [...state.stockIn];
+  if(term){
+    const t = term.toLowerCase();
+    data = data.filter(x => getItemName(x.kode).toLowerCase().includes(t) || x.kode.toLowerCase().includes(t));
+  }
+  data = data.sort((a,b)=>b.tanggal.localeCompare(a.tanggal)).slice(0,10);
+  if(!data.length) return `<p style="color:var(--ink-soft);font-size:13.5px;">${term? 'Tidak ada riwayat yang cocok dengan pencarian.' : 'Belum ada catatan stok masuk.'}</p>`;
+  return `<table><thead><tr><th>Tanggal</th><th>Kode</th><th>Nama</th><th class="num">Jumlah</th><th>Sumber</th><th>Oleh</th><th></th></tr></thead>
+  <tbody>${data.map(t=>`<tr><td>${fmtDateDisplay(t.tanggal)}</td><td>${esc(t.kode)}</td><td>${esc(getItemName(t.kode))}</td><td class="num">${fmtNum(t.jumlah)}</td><td>${esc(t.sumber||'-')}</td><td>${esc(t.oleh)}</td><td style="white-space:nowrap;text-align:right;">${txActionButtons('in', t.id)}</td></tr>`).join('')}</tbody></table>`;
+}
+function txActionButtons(type, id){
+  if(!canEdit()) return '';
+  return `<button class="icon-btn" title="Ubah" data-action="tx-edit" data-type="${type}" data-id="${esc(id)}">&#9998;</button>${isAdmin()? `<button class="icon-btn danger" title="Batalkan" data-action="tx-cancel" data-type="${type}" data-id="${esc(id)}">&#128465;</button>` : ''}`;
+}
+
+/* ============ STOK KELUAR ============ */
+function stockOutHTML(){
+  if(!canEdit()){
+    return `<div class="empty-state"><h3>Akses terbatas</h3><p>Peran "Hanya Lihat" tidak dapat mencatat stok keluar. Lihat riwayatnya di menu Riwayat Transaksi.</p></div>`;
+  }
+  return `
+  <div class="grid2" style="align-items:start;">
+    <div class="card">
+      <h3 class="section-title">Catat Stok Keluar</h3>
+      <form data-form="stockout-form">
+        <div class="field"><label>Tanggal</label><input type="date" name="tanggal" value="${todayStr()}" required></div>
+        <div class="field">
+          <label>Cari Nama Sparepart</label>
+          <input type="text" id="stockout-item-search" data-filter="stockout-item-search" placeholder="Ketik nama atau kode sparepart...">
+        </div>
+        <div class="field"><label>Sparepart</label><select name="kode" id="stockout-select" data-onchange="stockout-kode" required>${itemOptionsHTML('','')}</select>
+          <p class="hint" id="stockout-hint"></p>
+        </div>
+        <div class="field"><label>Jumlah Keluar</label><input type="number" name="jumlah" min="1" required></div>
+        <div class="grid2">
+          <div class="field"><label>Nama Pengambil</label><input type="text" name="pengambil" required placeholder="cth. Andi"></div>
+          <div class="field"><label>Divisi / Bagian</label><input type="text" name="divisi" required placeholder="cth. Maintenance"></div>
+        </div>
+        <div class="field"><label>Keterangan (opsional)</label><textarea name="keterangan" rows="2"></textarea></div>
+        <div class="form-error" id="stockout-form-error"></div>
+        <button class="btn btn-primary" type="submit">Simpan Stok Keluar</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3 class="section-title">Riwayat Terbaru</h3>
+      <div class="field" style="margin-bottom:10px;">
+        <input type="text" id="stockout-history-search" data-filter="stockout-history-search" placeholder="Cari nama barang di riwayat...">
+      </div>
+      <div id="stockout-history-container">${renderStockOutRecent('')}</div>
+    </div>
+  </div>`;
+}
+function renderStockOutRecent(term){
+  let data = [...state.stockOut];
+  if(term){
+    const t = term.toLowerCase();
+    data = data.filter(x => getItemName(x.kode).toLowerCase().includes(t) || x.kode.toLowerCase().includes(t));
+  }
+  data = data.sort((a,b)=>b.tanggal.localeCompare(a.tanggal)).slice(0,10);
+  if(!data.length) return `<p style="color:var(--ink-soft);font-size:13.5px;">${term? 'Tidak ada riwayat yang cocok dengan pencarian.' : 'Belum ada catatan stok keluar.'}</p>`;
+  return `<table><thead><tr><th>Tanggal</th><th>Kode</th><th>Nama</th><th class="num">Jumlah</th><th>Pengambil</th><th>Divisi</th><th></th></tr></thead>
+  <tbody>${data.map(t=>`<tr><td>${fmtDateDisplay(t.tanggal)}</td><td>${esc(t.kode)}</td><td>${esc(getItemName(t.kode))}</td><td class="num">${fmtNum(t.jumlah)}</td><td>${esc(t.pengambil)}</td><td>${esc(t.divisi)}</td><td style="white-space:nowrap;text-align:right;">${txActionButtons('out', t.id)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+/* ============ RIWAYAT ============ */
+function riwayatHTML(){
+  return `
+  <p style="color:var(--ink-soft);font-size:13px;margin-bottom:14px;">Gabungan seluruh transaksi stok masuk dan keluar.</p>
+  <div class="toolbar">
+    <select id="riwayat-jenis" data-filter="riwayat"><option value="semua">Semua Jenis</option><option value="Masuk">Stok Masuk</option><option value="Keluar">Stok Keluar</option></select>
+    <input type="date" id="riwayat-dari" data-filter="riwayat">
+    <input type="date" id="riwayat-sampai" data-filter="riwayat">
+    <input type="text" id="riwayat-cari" data-filter="riwayat" placeholder="Cari kode, nama, atau pengambil...">
+  </div>
+  <div class="card" id="riwayat-table-container">${renderRiwayatTable()}</div>`;
+}
+function renderRiwayatTable(){
+  const jenis = document.getElementById('riwayat-jenis')?.value || 'semua';
+  const dari = document.getElementById('riwayat-dari')?.value || '';
+  const sampai = document.getElementById('riwayat-sampai')?.value || '';
+  const cari = (document.getElementById('riwayat-cari')?.value || '').toLowerCase();
+
+  let data = [
+    ...state.stockIn.map(t=>({...t, jenis:'Masuk'})),
+    ...state.stockOut.map(t=>({...t, jenis:'Keluar'})),
+  ];
+  if(jenis!=='semua') data = data.filter(t=>t.jenis===jenis);
+  data = data.filter(t=>inRange(t.tanggal, dari, sampai));
+  if(cari){
+    data = data.filter(t => t.kode.toLowerCase().includes(cari) || getItemName(t.kode).toLowerCase().includes(cari) ||
+      (t.pengambil||'').toLowerCase().includes(cari) || (t.sumber||'').toLowerCase().includes(cari));
+  }
+  data.sort((a,b)=> b.tanggal.localeCompare(a.tanggal));
+
+  if(!data.length) return `<div class="empty-state"><h3>Tidak ada transaksi</h3><p>Coba ubah filter tanggal atau kata kunci pencarian.</p></div>`;
+
+  return `<table><thead><tr>
+    <th>Tanggal</th><th>Jenis</th><th>Kode</th><th>Nama</th><th class="num">Jumlah</th><th>Pengambil/Sumber</th><th>Divisi</th><th>Oleh</th>${canEdit()?'<th></th>':''}
+  </tr></thead><tbody>
+  ${data.map(t=>`<tr>
+    <td>${fmtDateDisplay(t.tanggal)}</td>
+    <td><span class="badge ${t.jenis==='Masuk'?'badge-masuk':'badge-keluar'}">${t.jenis}</span></td>
+    <td>${esc(t.kode)}</td><td>${esc(getItemName(t.kode))}</td><td class="num">${fmtNum(t.jumlah)}</td>
+    <td>${esc(t.jenis==='Masuk' ? (t.sumber||'-') : t.pengambil)}</td>
+    <td>${esc(t.jenis==='Keluar' ? t.divisi : '-')}</td>
+    <td>${esc(t.oleh)}</td>
+    ${canEdit()? `<td style="white-space:nowrap;text-align:right;">${txActionButtons(t.jenis==='Masuk'?'in':'out', t.id)}</td>` : ''}
+  </tr>`).join('')}
+  </tbody></table>`;
+}
+
+/* ============ LAPORAN ============ */
+function laporanHTML(){
+  return `
+  <p style="color:var(--ink-soft);font-size:13px;margin-bottom:14px;">Buat laporan dan unduh dalam format Excel atau PDF.</p>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="toolbar" style="margin-bottom:0;">
+      <select id="report-type" onchange="toggleReportDates()">
+        <option value="stok">Laporan Stok Saat Ini</option>
+        <option value="masuk">Riwayat Stok Masuk</option>
+        <option value="keluar">Riwayat Stok Keluar</option>
+        <option value="gabungan">Riwayat Transaksi Gabungan</option>
+      </select>
+      <span id="report-date-fields">
+        <input type="date" id="report-from"> s/d <input type="date" id="report-to">
+      </span>
+      <button class="btn btn-primary" data-action="generate-report">Buat Laporan</button>
+    </div>
+  </div>
+  <div class="card" id="report-preview"><p style="color:var(--ink-soft);font-size:13.5px;">Pilih jenis laporan lalu klik "Buat Laporan" untuk melihat pratinjau.</p></div>`;
+}
+function toggleReportDates(){
+  const type = document.getElementById('report-type').value;
+  document.getElementById('report-date-fields').style.display = type==='stok' ? 'none' : 'inline';
+}
+function generateReport(){
+  const type = document.getElementById('report-type').value;
+  const from = document.getElementById('report-from')?.value || '';
+  const to = document.getElementById('report-to')?.value || '';
+  const periodLabel = (from||to) ? `Periode: ${from?fmtDateDisplay(from):'...'} s/d ${to?fmtDateDisplay(to):'...'}` : '';
+  let columns, rows, excelRows, title, filename;
+
+  if(type==='stok'){
+    title='Laporan Stok Saat Ini';
+    columns=['Kode','Nama','Kategori','Satuan','Lokasi','Stok','Stok Min','Status'];
+    const data=[...state.items].sort((a,b)=>a.nama.localeCompare(b.nama));
+    rows=data.map(it=>{const st=stockStatus(it); return [it.kode,it.nama,it.kategori||'-',it.satuan||'-',it.lokasi||'-',it.stok,it.stokMin,st.label];});
+    excelRows=data.map(it=>{const st=stockStatus(it); return {Kode:it.kode,Nama:it.nama,Kategori:it.kategori||'-',Satuan:it.satuan||'-',Lokasi:it.lokasi||'-',Stok:it.stok,'Stok Min':it.stokMin,Status:st.label};});
+    filename='laporan-stok-'+todayStr();
+  } else if(type==='masuk'){
+    title='Laporan Riwayat Stok Masuk';
+    columns=['Tanggal','Kode','Nama','Jumlah','Sumber','Oleh','Keterangan'];
+    const data=state.stockIn.filter(t=>inRange(t.tanggal,from,to)).sort((a,b)=>a.tanggal.localeCompare(b.tanggal));
+    rows=data.map(t=>[fmtDateDisplay(t.tanggal),t.kode,getItemName(t.kode),t.jumlah,t.sumber||'-',t.oleh,t.keterangan||'-']);
+    excelRows=data.map(t=>({Tanggal:fmtDateDisplay(t.tanggal),Kode:t.kode,Nama:getItemName(t.kode),Jumlah:t.jumlah,Sumber:t.sumber||'-',Oleh:t.oleh,Keterangan:t.keterangan||'-'}));
+    filename='laporan-stok-masuk-'+todayStr();
+  } else if(type==='keluar'){
+    title='Laporan Riwayat Stok Keluar';
+    columns=['Tanggal','Kode','Nama','Jumlah','Pengambil','Divisi','Oleh','Keterangan'];
+    const data=state.stockOut.filter(t=>inRange(t.tanggal,from,to)).sort((a,b)=>a.tanggal.localeCompare(b.tanggal));
+    rows=data.map(t=>[fmtDateDisplay(t.tanggal),t.kode,getItemName(t.kode),t.jumlah,t.pengambil,t.divisi,t.oleh,t.keterangan||'-']);
+    excelRows=data.map(t=>({Tanggal:fmtDateDisplay(t.tanggal),Kode:t.kode,Nama:getItemName(t.kode),Jumlah:t.jumlah,Pengambil:t.pengambil,Divisi:t.divisi,Oleh:t.oleh,Keterangan:t.keterangan||'-'}));
+    filename='laporan-stok-keluar-'+todayStr();
+  } else {
+    title='Laporan Riwayat Transaksi Gabungan';
+    columns=['Tanggal','Jenis','Kode','Nama','Jumlah','Pengambil/Sumber','Divisi','Oleh'];
+    const masuk=state.stockIn.filter(t=>inRange(t.tanggal,from,to)).map(t=>({...t,jenis:'Masuk'}));
+    const keluar=state.stockOut.filter(t=>inRange(t.tanggal,from,to)).map(t=>({...t,jenis:'Keluar'}));
+    const data=[...masuk,...keluar].sort((a,b)=>a.tanggal.localeCompare(b.tanggal));
+    rows=data.map(t=>[fmtDateDisplay(t.tanggal),t.jenis,t.kode,getItemName(t.kode),t.jumlah,(t.jenis==='Masuk'?(t.sumber||'-'):t.pengambil),(t.jenis==='Keluar'?t.divisi:'-'),t.oleh]);
+    excelRows=data.map(t=>({Tanggal:fmtDateDisplay(t.tanggal),Jenis:t.jenis,Kode:t.kode,Nama:getItemName(t.kode),Jumlah:t.jumlah,'Pengambil/Sumber':(t.jenis==='Masuk'?(t.sumber||'-'):t.pengambil),Divisi:(t.jenis==='Keluar'?t.divisi:'-'),Oleh:t.oleh}));
+    filename='laporan-transaksi-'+todayStr();
+  }
+  window.__lastReport = {columns, rows, excelRows, title, filename, periodLabel};
+  renderReportPreview();
+}
+function renderReportPreview(){
+  const r = window.__lastReport;
+  const el = document.getElementById('report-preview');
+  if(!r || !r.rows.length){
+    el.innerHTML = `<div class="empty-state"><h3>Tidak ada data</h3><p>Tidak ada data yang cocok untuk laporan dan rentang tanggal ini.</p></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div><h3 class="section-title" style="margin-bottom:2px;">${esc(r.title)}</h3><p class="hint">${esc(r.periodLabel)}</p></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" data-action="export-excel">Unduh Excel</button>
+        <button class="btn btn-primary" data-action="export-pdf">Unduh PDF</button>
+      </div>
+    </div>
+    <table><thead><tr>${r.columns.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+    <tbody>${r.rows.map(row=>`<tr>${row.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function exportExcel(){
+  const r = window.__lastReport;
+  if(!r || !r.rows.length) return;
+  const headerRows = [
+    ['PT. VENDOURA INTI PERKASA'],
+    [r.title],
+    [r.periodLabel || ''],
+    ['Dicetak: ' + new Date().toLocaleString('id-ID')],
+    [],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(headerRows);
+  XLSX.utils.sheet_add_json(ws, r.excelRows, {origin:{r:headerRows.length,c:0}});
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Laporan');
+  XLSX.writeFile(wb, r.filename + '.xlsx');
+}
+function exportPDF(){
+  const r = window.__lastReport;
+  if(!r || !r.rows.length) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(14); doc.text('PT. VENDOURA INTI PERKASA', 14, 15);
+  doc.setFontSize(11); doc.text(r.title, 14, 22);
+  let y = 28;
+  if(r.periodLabel){ doc.setFontSize(9); doc.text(r.periodLabel, 14, y); y += 6; }
+  doc.setFontSize(8.5); doc.text('Dicetak: ' + new Date().toLocaleString('id-ID'), 14, y); y += 6;
+  doc.autoTable({ head:[r.columns], body:r.rows, startY:y, styles:{fontSize:8}, headStyles:{fillColor:[46,92,138]} });
+  doc.save(r.filename + '.pdf');
+}
+
+/* ============ GRAFIK & ANALITIK ============ */
+function last30Dates(){
+  const arr = [];
+  const base = new Date();
+  for(let i=29;i>=0;i--){
+    const d = new Date(base);
+    d.setDate(base.getDate()-i);
+    arr.push(d.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function analyticsHTML(){
+  if(!state.items.length){
+    return `<div class="empty-state"><h3>Belum ada data untuk dianalisa</h3><p>Tambahkan sparepart dan catat transaksi stok terlebih dahulu untuk melihat grafik &amp; analitik.</p></div>`;
+  }
+  return `
+  <p class="hint" style="margin-bottom:16px;">Ringkasan tren transaksi dan nilai inventory berdasarkan data yang tercatat saat ini.</p>
+  <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:22px;">
+    <div class="stat-card"><div class="label">Total Nilai Inventory</div><div class="value" id="an-total-value" style="font-size:21px;">-</div></div>
+    <div class="stat-card"><div class="label">Volume Masuk (30 Hari)</div><div class="value" id="an-total-in" style="font-size:21px;">-</div></div>
+    <div class="stat-card"><div class="label">Volume Keluar (30 Hari)</div><div class="value" id="an-total-out" style="font-size:21px;">-</div></div>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <h3 class="section-title">Tren Stok Masuk vs Keluar — 30 Hari Terakhir</h3>
+    <canvas id="chart-trend" height="90"></canvas>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3 class="section-title">Distribusi Total Stok per Kategori</h3>
+      <canvas id="chart-category" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h3 class="section-title">Proporsi Status Stok</h3>
+      <canvas id="chart-status" height="220"></canvas>
+    </div>
+  </div>
+  <p class="hint" style="margin-top:14px;">Nilai inventory dihitung dari stok saat ini dikali harga satuan (jika harga diisi pada data sparepart).</p>`;
+}
+function initAnalyticsCharts(){
+  if(!document.getElementById('chart-trend') || typeof Chart === 'undefined') return;
+
+  const dates = last30Dates();
+  const inByDate = {}, outByDate = {};
+  dates.forEach(d => { inByDate[d]=0; outByDate[d]=0; });
+  state.stockIn.forEach(t => { if(inByDate.hasOwnProperty(t.tanggal)) inByDate[t.tanggal]+=t.jumlah; });
+  state.stockOut.forEach(t => { if(outByDate.hasOwnProperty(t.tanggal)) outByDate[t.tanggal]+=t.jumlah; });
+  const totalIn30 = Object.values(inByDate).reduce((a,b)=>a+b,0);
+  const totalOut30 = Object.values(outByDate).reduce((a,b)=>a+b,0);
+  const totalValue = state.items.reduce((s,i)=> s + (i.stok*(i.harga||0)), 0);
+
+  document.getElementById('an-total-value').textContent = fmtRupiah(totalValue);
+  document.getElementById('an-total-in').textContent = fmtNum(totalIn30);
+  document.getElementById('an-total-out').textContent = fmtNum(totalOut30);
+
+  window.__charts = window.__charts || {};
+  ['trend','category','status'].forEach(k => { if(window.__charts[k]){ window.__charts[k].destroy(); delete window.__charts[k]; } });
+
+  window.__charts.trend = new Chart(document.getElementById('chart-trend'), {
+    type:'line',
+    data:{
+      labels: dates.map(d=>fmtDateDisplay(d)),
+      datasets:[
+        {label:'Stok Masuk', data:dates.map(d=>inByDate[d]), borderColor:'#2E5C8A', backgroundColor:'rgba(46,92,138,0.12)', tension:.25, fill:true, pointRadius:2},
+        {label:'Stok Keluar', data:dates.map(d=>outByDate[d]), borderColor:'#E8A33D', backgroundColor:'rgba(232,163,61,0.18)', tension:.25, fill:true, pointRadius:2},
+      ]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{x:{ticks:{maxTicksLimit:8}}, y:{beginAtZero:true}} }
+  });
+
+  const catMap = {};
+  state.items.forEach(i=>{ const cat = (i.kategori||'').trim() || 'Tanpa Kategori'; catMap[cat]=(catMap[cat]||0)+i.stok; });
+  const catLabels = Object.keys(catMap);
+  const catColors = ['#2E5C8A','#E8A33D','#256a45','#B23A32','#8a5b13','#5B6772','#204468','#3E7C59'];
+  window.__charts.category = new Chart(document.getElementById('chart-category'), {
+    type:'bar',
+    data:{ labels:catLabels, datasets:[{ label:'Total Stok', data:Object.values(catMap), backgroundColor:catLabels.map((_,i)=>catColors[i%catColors.length]) }] },
+    options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true}} }
+  });
+
+  let aman=0, rendah=0, habis=0;
+  state.items.forEach(i=>{ const st=stockStatus(i); if(st.label==='Aman') aman++; else if(st.label==='Rendah') rendah++; else habis++; });
+  window.__charts.status = new Chart(document.getElementById('chart-status'), {
+    type:'doughnut',
+    data:{ labels:['Aman','Rendah','Habis'], datasets:[{ data:[aman,rendah,habis], backgroundColor:['#256a45','#E8A33D','#B23A32'] }] },
+    options:{ responsive:true, plugins:{legend:{position:'bottom'}} }
+  });
+}
+
+/* ============ PENGGUNA ============ */
+function penggunaHTML(){
+  return `
+  <div class="view-head">
+    <div><p>Kelola akun dan hak akses pengguna sistem.</p></div>
+    <button class="btn btn-primary" data-action="user-new">+ Tambah Pengguna</button>
+  </div>
+  <div class="card" id="pengguna-table-container">${renderUserTable()}</div>`;
+}
+function renderUserTable(){
+  if(!state.users.length){
+    return `<div class="empty-state"><h3>Belum ada pengguna</h3><p>Tambahkan pengguna untuk memberi akses ke sistem ini.</p></div>`;
+  }
+  const data = [...state.users].sort((a,b)=>a.nama.localeCompare(b.nama));
+  return `<table><thead><tr><th>Nama</th><th>Email</th><th>Peran</th><th></th></tr></thead><tbody>
+  ${data.map(u=>{
+    const isSelf = state.user && state.user.id===u.id;
+    return `<tr>
+      <td>${esc(u.nama)}</td><td>${esc(u.email)}</td>
+      <td><span class="role-badge ${roleBadgeClass(u.role)}">${esc(u.role)}</span></td>
+      <td style="white-space:nowrap;text-align:right;">
+        <button class="icon-btn" title="Ubah" data-action="user-edit" data-id="${esc(u.id)}">&#9998;</button>
+        ${isSelf? '' : `<button class="icon-btn danger" title="Hapus" data-action="user-delete" data-id="${esc(u.id)}">&#128465;</button>`}
+      </td>
+    </tr>`;
+  }).join('')}
+  </tbody></table>`;
+}
+function openUserModal(editId){
+  const editing = !!editId;
+  const u = editing ? state.users.find(x=>x.id===editId) : null;
+  const html = `
+  <div class="modal-backdrop" data-action="modal-backdrop">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:440px;">
+      <div class="modal-head">
+        <h3>${editing? 'Ubah Pengguna' : 'Tambah Pengguna'}</h3>
+        <button class="close-x" data-action="modal-close">&times;</button>
+      </div>
+      <form data-form="user-form" ${editing? `data-edit-id="${esc(editId)}"`:''}>
+        <div class="field"><label>Nama</label><input type="text" name="nama" value="${editing? esc(u.nama):''}" required></div>
+        <div class="field"><label>Email</label><input type="text" name="email" value="${editing? esc(u.email):''}" required></div>
+        <div class="field">
+          <label>Password ${editing? '(kosongkan jika tidak diubah)':''}</label>
+          <input type="password" name="password" placeholder="${editing? '••••••••' : 'Minimal 4 karakter'}" ${editing? '' : 'required'}>
+        </div>
+        <div class="field">
+          <label>Peran</label>
+          <select name="role">
+            <option value="Admin" ${editing && u.role==='Admin' ? 'selected':''}>Admin</option>
+            <option value="Petugas Gudang" ${editing && u.role==='Petugas Gudang' ? 'selected':''}>Petugas Gudang</option>
+            <option value="Hanya Lihat" ${editing && u.role==='Hanya Lihat' ? 'selected':''}>Hanya Lihat</option>
+          </select>
+        </div>
+        <div class="form-error" id="user-form-error"></div>
+        <div class="action-row">
+          <button type="button" class="btn btn-ghost" data-action="modal-close">Batal</button>
+          <button type="submit" class="btn btn-primary">${editing? 'Simpan Perubahan':'Tambah Pengguna'}</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+
+/* ============ CADANGAN DATA ============ */
+function dataHTML(){
+  const folderStatus = state.folderHandle ? `Tersambung ke folder: <strong>${esc(state.folderHandle.name)}</strong>` : 'Belum tersambung ke folder manapun.';
+  const savedLabel = state.lastSaved ? `Terakhir disimpan: ${state.lastSaved.toLocaleString('id-ID')}` : 'Belum pernah disimpan pada sesi ini.';
+  const localLabel = localStorageAvailable ? 'Aktif — data dimuat &amp; disimpan otomatis di browser ini.' : 'Tidak tersedia di tampilan ini. Gunakan unduh/impor manual atau buka file ini langsung di browser Anda.';
+  return `
+  <div class="card" style="margin-bottom:18px;">
+    <h3 class="section-title">Penyimpanan Otomatis di Browser Ini</h3>
+    <p class="hint" style="margin-bottom:12px;">Setiap perubahan data (sparepart, stok masuk/keluar) langsung tersimpan otomatis di browser ini, dan akan dimuat kembali secara otomatis saat halaman ini dibuka lagi — termasuk bila halaman tertutup sendiri karena error atau lupa disimpan. Ini berlaku per-browser/per-perangkat: untuk memindahkan data ke PC lain, gunakan folder atau cadangan manual di bawah.</p>
+    <p style="margin-bottom:14px;">Status: ${localLabel}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" data-action="reload-local">Muat Ulang dari Penyimpanan Browser</button>
+      <button class="btn btn-danger" data-action="clear-local">Hapus Data Tersimpan di Browser Ini</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <h3 class="section-title">Simpan ke Folder di PC Anda</h3>
+    <p class="hint" style="margin-bottom:12px;">Hubungkan sebuah folder di komputer Anda agar data juga tersimpan ke file <code>data-gudang-vip.json</code> di folder tersebut — berguna untuk cadangan yang bisa dipindah ke PC lain. Fitur ini bergantung pada dukungan browser (disarankan Chrome/Edge versi desktop terbaru) — jika tidak didukung, gunakan unduh/impor manual di bawah.</p>
+    <p id="folder-status" style="margin-bottom:14px;">${folderStatus}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" data-action="connect-folder">Hubungkan Folder di PC</button>
+      <button class="btn btn-ghost" data-action="save-now">Simpan Sekarang</button>
+    </div>
+    <p class="hint" id="save-status" style="margin-top:10px;">${savedLabel}</p>
+  </div>
+  <div class="card">
+    <h3 class="section-title">Unduh & Impor Cadangan Manual</h3>
+    <p class="hint" style="margin-bottom:12px;">Alternatif jika folder tidak dapat dihubungkan: unduh cadangan sebagai file, lalu pilih lokasi penyimpanan sendiri melalui kotak dialog "Simpan Sebagai" pada browser Anda.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" data-action="download-backup">Unduh Cadangan (.json)</button>
+      <button class="btn btn-ghost" data-action="import-backup-trigger">Impor dari File Cadangan</button>
+      <input type="file" id="import-file-input" accept=".json" style="display:none;" data-onchange="import-backup">
+    </div>
+  </div>`;
+}
+function updateSaveStatusUI(){
+  const s = document.getElementById('folder-status');
+  if(s) s.innerHTML = state.folderHandle ? `Tersambung ke folder: <strong>${esc(state.folderHandle.name)}</strong>` : 'Belum tersambung ke folder manapun.';
+  const t = document.getElementById('save-status');
+  if(t) t.textContent = state.lastSaved ? `Terakhir disimpan: ${state.lastSaved.toLocaleString('id-ID')}` : 'Belum pernah disimpan pada sesi ini.';
+}
+function exportStateObject(){
+  return { company:'PT. VENDOURA INTI PERKASA', exportedAt:new Date().toISOString(), users:state.users, items:state.items, stockIn:state.stockIn, stockOut:state.stockOut };
+}
+function loadStateFromObject(obj){
+  state.users = obj.users || [];
+  state.items = obj.items || [];
+  state.stockIn = obj.stockIn || [];
+  state.stockOut = obj.stockOut || [];
+}
+
+/* ---- Penyimpanan otomatis di browser ini (localStorage) ---- */
+const LOCAL_KEY = 'gudang-vip-data-v1';
+let localStorageAvailable = true;
+function saveLocal(){
+  try{
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(exportStateObject()));
+    state.lastSaved = new Date();
+    return true;
+  }catch(e){
+    localStorageAvailable = false;
+    console.warn('Penyimpanan otomatis browser tidak tersedia:', e);
+    return false;
+  }
+}
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if(raw){
+      loadStateFromObject(JSON.parse(raw));
+      return true;
+    }
+  }catch(e){
+    localStorageAvailable = false;
+    console.warn('Penyimpanan otomatis browser tidak tersedia:', e);
+  }
+  return false;
+}
+function clearLocal(){
+  try{ localStorage.removeItem(LOCAL_KEY); state.lastSaved = null; }catch(e){ /* diabaikan */ }
+}
+async function connectFolder(){
+  if(!('showDirectoryPicker' in window)){
+    alert('Fitur pilih folder tidak didukung di browser ini. Gunakan Unduh/Impor manual di bawah.');
+    return;
+  }
+  try{
+    const handle = await window.showDirectoryPicker();
+    state.folderHandle = handle;
+    try{
+      const fh = await handle.getFileHandle('data-gudang-vip.json');
+      const file = await fh.getFile();
+      const parsed = JSON.parse(await file.text());
+      if(confirm('Ditemukan data tersimpan di folder ini. Muat data tersebut? (Data pada sesi saat ini akan diganti)')){
+        loadStateFromObject(parsed);
+      }
+    }catch(e){ /* belum ada file, lanjut buat baru */ }
+    await writeDataToFolder();
+    render();
+  }catch(err){
+    console.error(err);
+    alert('Tidak dapat mengakses folder (mungkin dibatasi oleh keamanan browser di tampilan ini). Gunakan Unduh/Impor manual sebagai gantinya.');
+  }
+}
+async function writeDataToFolder(){
+  if(!state.folderHandle) return false;
+  try{
+    const fh = await state.folderHandle.getFileHandle('data-gudang-vip.json', {create:true});
+    const writable = await fh.createWritable();
+    await writable.write(JSON.stringify(exportStateObject(), null, 2));
+    await writable.close();
+    state.lastSaved = new Date();
+    updateSaveStatusUI();
+    return true;
+  }catch(err){
+    console.error('Gagal menyimpan otomatis:', err);
+    return false;
+  }
+}
+function downloadBackup(){
+  const blob = new Blob([JSON.stringify(exportStateObject(), null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'data-gudang-vip-' + todayStr() + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  state.lastSaved = new Date();
+  updateSaveStatusUI();
+}
+function importBackupFile(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(confirm('Impor akan mengganti seluruh data pada sesi ini dengan isi file cadangan. Lanjutkan?')){
+        loadStateFromObject(parsed);
+        render();
+      }
+    }catch(e){ alert('File tidak valid. Pastikan file adalah cadangan JSON yang dihasilkan aplikasi ini.'); }
+  };
+  reader.readAsText(file);
+}
+async function saveNow(){
+  saveLocal();
+  if(state.folderHandle){
+    await writeDataToFolder();
+  }
+  updateSaveStatusUI();
+}
+
+/* ============ EVENT DELEGATION ============ */
+const handlers = {
+  'nav': (el,id) => navigate(id),
+  'logout': () => { state.user=null; render(); },
+  'item-new': () => openItemModal(null),
+  'item-edit': (el,id) => openItemModal(id),
+  'item-delete': (el,id) => {
+    if(confirm('Hapus sparepart "'+id+'"? Riwayat transaksi terkait akan tetap tersimpan.')){
+      state.items = state.items.filter(i=>i.kode!==id);
+      autosave(); navigate('master');
+    }
+  },
+  'modal-close': () => closeModal(),
+  'modal-backdrop': () => closeModal(),
+  'connect-folder': () => connectFolder(),
+  'save-now': () => saveNow(),
+  'download-backup': () => downloadBackup(),
+  'import-backup-trigger': () => document.getElementById('import-file-input').click(),
+  'login-import-trigger': () => document.getElementById('login-import-input').click(),
+  'reload-local': () => {
+    if(confirm('Muat ulang akan mengganti data pada sesi ini dengan data tersimpan terakhir di browser. Lanjutkan?')){
+      loadLocal(); render();
+    }
+  },
+  'clear-local': () => {
+    if(confirm('Hapus data tersimpan otomatis di browser ini? Data pada sesi yang sedang berjalan tidak ikut terhapus.')){
+      clearLocal(); updateSaveStatusUI();
+    }
+  },
+  'generate-report': () => generateReport(),
+  'export-excel': () => exportExcel(),
+  'export-pdf': () => exportPDF(),
+  'user-new': () => openUserModal(null),
+  'user-edit': (el,id) => openUserModal(id),
+  'user-delete': (el,id) => {
+    const u = state.users.find(x=>x.id===id);
+    if(!u) return;
+    if(state.user && state.user.id===id){ alert('Anda tidak dapat menghapus akun Anda sendiri.'); return; }
+    if(u.role==='Admin' && adminCount()<=1){ alert('Tidak dapat menghapus satu-satunya akun Admin yang tersisa.'); return; }
+    if(confirm('Hapus pengguna "'+u.nama+'"?')){
+      state.users = state.users.filter(x=>x.id!==id);
+      autosave(); navigate('pengguna');
+    }
+  },
+  'tx-edit': (el,id,e) => openTxModal(el.dataset.type, id),
+  'tx-cancel': (el,id,e) => cancelTx(el.dataset.type, id),
+};
+document.addEventListener('click', (e)=>{
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const action = el.dataset.action;
+  if(handlers[action]) handlers[action](el, el.dataset.id, e);
+});
+
+function autosave(){ saveLocal(); if(state.folderHandle) writeDataToFolder(); if(state.view==='data') updateSaveStatusUI(); }
+
+document.addEventListener('submit', (e)=>{
+  const form = e.target.closest('form[data-form]');
+  if(!form) return;
+  e.preventDefault();
+  const name = form.dataset.form;
+
+  if(name==='user-setup-form'){
+    const fd = new FormData(form);
+    const nama = (fd.get('nama')||'').trim();
+    const email = (fd.get('email')||'').trim();
+    const password = fd.get('password')||'';
+    if(!nama || !email){ showFormError(form,'Nama dan email wajib diisi'); return; }
+    if(password.length<4){ showFormError(form,'Password minimal 4 karakter'); return; }
+    const u = { id: uid('USR'), nama, email, password, role:'Admin' };
+    state.users.push(u);
+    state.user = { id:u.id, name:u.nama, role:u.role };
+    autosave();
+    render();
+    return;
+  }
+
+  if(name==='login-form'){
+    const fd = new FormData(form);
+    const email = (fd.get('email')||'').trim();
+    const password = fd.get('password')||'';
+    const u = findUserByEmail(email);
+    if(!u || u.password !== password){
+      const err = document.getElementById('login-error');
+      err.textContent = 'Email atau password salah.';
+      err.classList.add('show');
+      return;
+    }
+    state.user = { id:u.id, name:u.nama, role:u.role };
+    render();
+    return;
+  }
+
+  if(name==='user-form'){
+    const fd = new FormData(form);
+    const isEdit = !!form.dataset.editId;
+    const nama = (fd.get('nama')||'').trim();
+    const email = (fd.get('email')||'').trim();
+    const password = fd.get('password')||'';
+    const role = fd.get('role');
+    if(!nama || !email){ showFormError(form,'Nama dan email wajib diisi'); return; }
+    const existing = findUserByEmail(email);
+    if(existing && (!isEdit || existing.id!==form.dataset.editId)){ showFormError(form,'Email sudah digunakan pengguna lain'); return; }
+    if(isEdit){
+      const idx = state.users.findIndex(u=>u.id===form.dataset.editId);
+      const current = state.users[idx];
+      if(current.role==='Admin' && role!=='Admin' && adminCount()<=1){ showFormError(form,'Tidak dapat mengubah peran satu-satunya akun Admin.'); return; }
+      state.users[idx] = { ...current, nama, email, role, password: password ? password : current.password };
+      if(state.user && state.user.id===current.id){ state.user = { id:current.id, name:nama, role }; }
+    } else {
+      if(password.length<4){ showFormError(form,'Password minimal 4 karakter'); return; }
+      state.users.push({ id: uid('USR'), nama, email, password, role });
+    }
+    closeModal(); autosave(); navigate('pengguna');
+    return;
+  }
+
+  if(name==='tx-form'){
+    const fd = new FormData(form);
+    const type = form.dataset.type;
+    const id = form.dataset.id;
+    const tx = getTx(type, id);
+    if(!tx){ showFormError(form,'Data transaksi tidak ditemukan (mungkin sudah dibatalkan di tempat lain).'); return; }
+    const isIn = type==='in';
+    const newJumlah = parseInt(fd.get('jumlah'),10);
+    if(!newJumlah || newJumlah<=0){ showFormError(form,'Jumlah harus lebih dari 0'); return; }
+    if(!isIn){
+      const pengambil = (fd.get('pengambil')||'').trim();
+      const divisi = (fd.get('divisi')||'').trim();
+      if(!pengambil || !divisi){ showFormError(form,'Nama pengambil dan divisi wajib diisi'); return; }
+    }
+    const item = getItem(tx.kode);
+    if(item){
+      const oldJumlah = tx.jumlah;
+      if(isIn){
+        const projected = item.stok - oldJumlah + newJumlah;
+        if(projected < 0){ showFormError(form, `Perubahan ini akan membuat stok menjadi minus (stok saat ini: ${item.stok}).`); return; }
+        item.stok = projected;
+      } else {
+        const availableAfterReversal = item.stok + oldJumlah;
+        if(newJumlah > availableAfterReversal){ showFormError(form, `Stok tidak mencukupi untuk jumlah baru. Maksimal: ${availableAfterReversal} ${item.satuan||''}`); return; }
+        item.stok = availableAfterReversal - newJumlah;
+      }
+    }
+    tx.tanggal = fd.get('tanggal') || tx.tanggal;
+    tx.jumlah = newJumlah;
+    tx.keterangan = (fd.get('keterangan')||'').trim();
+    if(isIn){
+      tx.sumber = (fd.get('sumber')||'').trim();
+    } else {
+      tx.pengambil = (fd.get('pengambil')||'').trim();
+      tx.divisi = (fd.get('divisi')||'').trim();
+    }
+    closeModal(); autosave(); navigate(state.view);
+    return;
+  }
+
+  if(name==='item-form'){
+    const fd = new FormData(form);
+    const isEdit = !!form.dataset.editKode;
+    const kode = isEdit ? form.dataset.editKode : (fd.get('kode')||'').trim();
+    if(!kode){ showFormError(form,'Kode sparepart wajib diisi'); return; }
+    if(!isEdit && state.items.some(i=>i.kode.toLowerCase()===kode.toLowerCase())){ showFormError(form,'Kode sudah digunakan, gunakan kode lain'); return; }
+    const nama = (fd.get('nama')||'').trim();
+    if(!nama){ showFormError(form,'Nama sparepart wajib diisi'); return; }
+    const stokMinRaw = parseInt(fd.get('stokMin')||'0',10);
+    const stokRaw = parseInt(fd.get('stok')||'0',10);
+    const payload = {
+      kode, nama,
+      kategori:(fd.get('kategori')||'').trim(),
+      satuan:(fd.get('satuan')||'').trim(),
+      lokasi:(fd.get('lokasi')||'').trim(),
+      stokMin: isNaN(stokMinRaw)?0:stokMinRaw,
+      harga: fd.get('harga') ? parseInt(fd.get('harga'),10) : 0,
+    };
+    if(isEdit){
+      const idx = state.items.findIndex(i=>i.kode===kode);
+      const allowStockEdit = isAdmin();
+      state.items[idx] = { ...state.items[idx], ...payload, stok: (allowStockEdit && !isNaN(stokRaw)) ? stokRaw : state.items[idx].stok };
+    } else {
+      state.items.push({ ...payload, stok: isNaN(stokRaw)?0:stokRaw });
+    }
+    closeModal(); autosave(); navigate('master');
+    return;
+  }
+
+  if(name==='stockin-form'){
+    const fd = new FormData(form);
+    const kode = fd.get('kode');
+    const jumlah = parseInt(fd.get('jumlah'),10);
+    if(!kode){ showFormError(form,'Pilih sparepart terlebih dahulu'); return; }
+    if(!jumlah || jumlah<=0){ showFormError(form,'Jumlah harus lebih dari 0'); return; }
+    const item = getItem(kode);
+    item.stok += jumlah;
+    state.stockIn.unshift({ id:uid('IN'), tanggal: fd.get('tanggal')||todayStr(), kode, jumlah,
+      sumber:(fd.get('sumber')||'').trim(), keterangan:(fd.get('keterangan')||'').trim(), oleh: state.user.name });
+    autosave(); navigate('stokmasuk');
+    return;
+  }
+
+  if(name==='stockout-form'){
+    const fd = new FormData(form);
+    const kode = fd.get('kode');
+    const jumlah = parseInt(fd.get('jumlah'),10);
+    const pengambil = (fd.get('pengambil')||'').trim();
+    const divisi = (fd.get('divisi')||'').trim();
+    if(!kode){ showFormError(form,'Pilih sparepart terlebih dahulu'); return; }
+    if(!jumlah || jumlah<=0){ showFormError(form,'Jumlah harus lebih dari 0'); return; }
+    if(!pengambil || !divisi){ showFormError(form,'Nama pengambil dan divisi wajib diisi'); return; }
+    const item = getItem(kode);
+    if(jumlah > item.stok){ showFormError(form, `Stok tidak mencukupi. Stok tersedia: ${item.stok} ${item.satuan||''}`); return; }
+    item.stok -= jumlah;
+    state.stockOut.unshift({ id:uid('OUT'), tanggal: fd.get('tanggal')||todayStr(), kode, jumlah, pengambil, divisi,
+      keterangan:(fd.get('keterangan')||'').trim(), oleh: state.user.name });
+    autosave(); navigate('stokkeluar');
+    return;
+  }
+});
+
+document.addEventListener('input', (e)=>{
+  const el = e.target.closest('[data-filter="master-search"]');
+  if(el){ document.getElementById('master-table-container').innerHTML = renderMasterTable(el.value); }
+  const rel = e.target.closest('[data-filter="riwayat"]');
+  if(rel && rel.tagName==='INPUT' && rel.type==='text'){ document.getElementById('riwayat-table-container').innerHTML = renderRiwayatTable(); }
+
+  const sinItem = e.target.closest('[data-filter="stockin-item-search"]');
+  if(sinItem){
+    const sel = document.getElementById('stockin-select');
+    const prev = sel.value;
+    sel.innerHTML = itemOptionsHTML(prev, sinItem.value);
+    const it = getItem(sel.value);
+    const h = document.getElementById('stockin-hint');
+    if(h) h.textContent = it? `Stok saat ini: ${it.stok} ${it.satuan||''}` : '';
+  }
+  const sinHist = e.target.closest('[data-filter="stockin-history-search"]');
+  if(sinHist){ document.getElementById('stockin-history-container').innerHTML = renderStockInRecent(sinHist.value); }
+
+  const soutItem = e.target.closest('[data-filter="stockout-item-search"]');
+  if(soutItem){
+    const sel = document.getElementById('stockout-select');
+    const prev = sel.value;
+    sel.innerHTML = itemOptionsHTML(prev, soutItem.value);
+    const it = getItem(sel.value);
+    const h = document.getElementById('stockout-hint');
+    if(h) h.textContent = it? `Stok tersedia: ${it.stok} ${it.satuan||''}` : '';
+  }
+  const soutHist = e.target.closest('[data-filter="stockout-history-search"]');
+  if(soutHist){ document.getElementById('stockout-history-container').innerHTML = renderStockOutRecent(soutHist.value); }
+});
+document.addEventListener('change', (e)=>{
+  const rel = e.target.closest('[data-filter="riwayat"]');
+  if(rel){ document.getElementById('riwayat-table-container').innerHTML = renderRiwayatTable(); }
+
+  const kIn = e.target.closest('[data-onchange="stockin-kode"]');
+  if(kIn){ const it=getItem(kIn.value); const h=document.getElementById('stockin-hint'); if(h) h.textContent = it? `Stok saat ini: ${it.stok} ${it.satuan||''}` : ''; }
+  const kOut = e.target.closest('[data-onchange="stockout-kode"]');
+  if(kOut){ const it=getItem(kOut.value); const h=document.getElementById('stockout-hint'); if(h) h.textContent = it? `Stok tersedia: ${it.stok} ${it.satuan||''}` : ''; }
+
+  const imp = e.target.closest('[data-onchange="import-backup"]');
+  if(imp && imp.files && imp.files[0]){ importBackupFile(imp.files[0]); imp.value=''; }
+
+  const loginImp = e.target.closest('[data-onchange="login-import"]');
+  if(loginImp && loginImp.files && loginImp.files[0]){ importBackupFile(loginImp.files[0]); loginImp.value=''; }
+});
+
+/* ============ REPLACEMENT FOR FRONTEND API SYNC ============ */
+
+// Ambil data terbaru dari server saat dibuka
+async function syncDataFromServer() {
+  try {
+    const res = await fetch('/api/sync');
+    const data = await res.json();
+    state.users = data.users || [];
+    state.items = data.items || [];
+    state.stockIn = data.stockIn || [];
+    state.stockOut = data.stockOut || [];
+    render();
+  } catch (err) {
+    console.error('Gagal menyinkronkan data dari server:', err);
+  }
+}
+
+// Override autosave ke server API
+async function autosave() {
+  await syncDataFromServer();
+}
+
+// Panggil sync pertama kali
+syncDataFromServer();
+
+render();
+</script>
+</body>
+</html>
