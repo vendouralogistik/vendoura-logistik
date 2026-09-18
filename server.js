@@ -18,26 +18,39 @@ const pool = new Pool({
 });
 
 // Auto Inisialisasi Tabel Database Cloud
+const fs = require('fs');
+
 async function initDB() {
   try {
-    await pool.query(`CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY, nama TEXT, email TEXT UNIQUE, password TEXT, role TEXT
-    )`);
-    await pool.query(`CREATE TABLE IF NOT EXISTS items (
-      kode TEXT PRIMARY KEY, nama TEXT, kategori TEXT, satuan TEXT, lokasi TEXT, harga INTEGER DEFAULT 0, stok INTEGER DEFAULT 0, "stokMin" INTEGER DEFAULT 0
-    )`);
-    await pool.query(`CREATE TABLE IF NOT EXISTS stock_in (
-      id TEXT PRIMARY KEY, tanggal TEXT, kode TEXT, jumlah INTEGER, sumber TEXT, keterangan TEXT, oleh TEXT
-    )`);
-    await pool.query(`CREATE TABLE IF NOT EXISTS stock_out (
-      id TEXT PRIMARY KEY, tanggal TEXT, kode TEXT, jumlah INTEGER, pengambil TEXT, divisi TEXT, keterangan TEXT, oleh TEXT
-    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, nama TEXT, email TEXT UNIQUE, password TEXT, role TEXT)`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS items (kode TEXT PRIMARY KEY, nama TEXT, kategori TEXT, satuan TEXT, lokasi TEXT, harga INTEGER DEFAULT 0, stok INTEGER DEFAULT 0, "stokMin" INTEGER DEFAULT 0)`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS stock_in (id TEXT PRIMARY KEY, tanggal TEXT, kode TEXT, jumlah INTEGER, sumber TEXT, keterangan TEXT, oleh TEXT)`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS stock_out (id TEXT PRIMARY KEY, tanggal TEXT, kode TEXT, jumlah INTEGER, pengambil TEXT, divisi TEXT, keterangan TEXT, oleh TEXT)`);
 
-    const adminPass = bcrypt.hashSync('admin123', 10);
-    await pool.query(`INSERT INTO users (id, nama, email, password, role) 
-                      VALUES ('USR-admin', 'Admin Logistik', 'admin@vendoura.com', $1, 'Admin')
-                      ON CONFLICT (email) DO NOTHING`, [adminPass]);
-    console.log('Database PostgreSQL Cloud Berhasil Terhubung.');
+    // Cek apakah database masih kosong
+    const countRes = await pool.query('SELECT COUNT(*) FROM items');
+    const jsonPath = path.join(__dirname, 'data-gudang-vip.json');
+
+    if (parseInt(countRes.rows[0].count, 10) === 0 && fs.existsSync(jsonPath)) {
+      console.log('Mengimpor data dari data-gudang-vip.json ke Cloud...');
+      const raw = fs.readFileSync(jsonPath);
+      const data = JSON.parse(raw);
+
+      for (const u of data.users) {
+        await pool.query(
+          `INSERT INTO users (id, nama, email, password, role) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (email) DO NOTHING`,
+          [u.id, u.nama, u.email, bcrypt.hashSync(u.password, 10), u.role]
+        );
+      }
+
+      for (const i of data.items) {
+        await pool.query(
+          `INSERT INTO items (kode, nama, kategori, satuan, lokasi, harga, stok, "stokMin") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (kode) DO NOTHING`,
+          [i.kode, i.nama, i.kategori, i.satuan, i.lokasi, i.harga || 0, i.stok || 0, i.stokMin || 0]
+        );
+      }
+      console.log('Data awal berhasil diimpor ke Cloud Database!');
+    }
   } catch (err) {
     console.error('Gagal inisialisasi DB:', err);
   }
